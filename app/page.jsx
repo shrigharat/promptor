@@ -1,6 +1,11 @@
 import Feed from '@components/Feed'
 import React from 'react'
 
+export const metadata = {
+  title: 'Promptor',
+  description: 'Discover and Share AI prompts'
+}
+
 const Home = () => {
   return (
     <section className='w-full flex-center flex-col'>
