@@ -1,49 +1,48 @@
-'use client';
-
 import Profile from "@components/Profile";
-import { useSearchParams } from "next/navigation"
-import { useEffect, useState } from "react";
+import Head from "next/head";
 
-const UserProfile = ({params}) => {
+const UserProfile = async ({params}) => {
+    let profileData;
 
-    const [profileData, setProfileData] = useState({
-        _id: '',
-        email: '',
-        image: '',
-        username: '',
-        prompts: []
-    })
-
-    const fetchUserProfile = async () => {
-        try{
-            const response = await fetch(`/api/user/${params.id}/profile`);
-            const data = await response.json();
-            
-            setProfileData(data);
-        } catch(error) {
-            console.error('Could not fetch prompts');
-            setProfileData({
-                _id: '',
-                email: '',
-                image: '',
-                username: '',
-                prompts: []
-            });
+    try{
+        const response = await fetch(`${process.env.API_URL}/api/user/${params.id}/profile`);
+        profileData = await response.json();
+    } catch(error) {
+        console.error('Could not fetch prompts');
+        console.error(error);
+        profileData = {
+            _id: '',
+            email: '',
+            image: '',
+            username: '',
+            prompts: []
         }
     }
 
-    useEffect(() => {
-        if(params?.id) {
-            fetchUserProfile();
-        }
-    }, [params?.id]);
-
     return (
-        <Profile 
-            name={profileData.username}
-            data={profileData.prompts}
-            desc={`Welcome to ${profileData.username}'s personalized profile page. Explore ${profileData.username}'s exceptional prompts and be inspired by the power of their imagination`}
-        />
+        <>
+            <Head>
+                <title>{profileData.username}'s Profile</title>
+                <meta property="og:title" content={`${profileData.username}'s Profile`}></meta>
+                <meta name="twitter:card" content={`${profileData.username}'s Profile`} />
+                <meta name="twitter:title" content={`${profileData.username}'s Profile`} />
+                
+                <meta property="og:image" content="/assets/images/default-cover-image.jpg" />
+                <meta name="twitter:image" content="/assets/images/default-cover-image.jpg" />
+
+                <meta name="description" content={`Check out ${profileData.username}'s profile aon Promptor and explore their prompts.`}></meta>
+                <meta property="og:description" content={`Check out ${profileData.username}'s profile aon Promptor and explore their prompts.`}></meta>
+                <meta name="twitter:description" content={`Check out ${profileData.username}'s profile aon Promptor and explore their prompts.`} />
+
+                <meta property="og:type" content="website" />
+                <meta name="robots" content="index, nofollow"></meta>
+            </Head>
+            <Profile 
+                name={profileData.username}
+                data={profileData.prompts}
+                desc={`Welcome to ${profileData.username}'s personalized profile page. Explore ${profileData.username}'s exceptional prompts and be inspired by the power of their imagination`}
+            />
+        </>
     )
 }
 
